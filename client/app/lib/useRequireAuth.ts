@@ -12,22 +12,47 @@ import { useAuthStore } from "./authStore";
  * no `next` param was present).
  */
 export function useRequireAuth() {
-  const { isAuthenticated, isLoading, checkAuthStatus } = useAuthStore();
+  const { isAuthenticated, isCheckingAuth, checkAuthStatus } = useAuthStore();
+
   const navigate = useNavigate();
   const location = useLocation();
+
   const [checked, setChecked] = useState(false);
 
   useEffect(() => {
-    checkAuthStatus().finally(() => setChecked(true));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    let mounted = true;
+
+    checkAuthStatus().finally(() => {
+      if (mounted) {
+        setChecked(true);
+      }
+    });
+
+    return () => {
+      mounted = false;
+    };
+  }, [checkAuthStatus]);
 
   useEffect(() => {
-    if (checked && !isLoading && !isAuthenticated) {
+    if (checked && !isCheckingAuth && !isAuthenticated) {
       const next = encodeURIComponent(location.pathname + location.search);
-      navigate(`/auth?next=${next}`);
-    }
-  }, [checked, isLoading, isAuthenticated, location.pathname, location.search, navigate]);
 
-  return { isReady: checked && !isLoading && isAuthenticated, isLoading: isLoading || !checked };
+      navigate(`/auth?next=${next}`, {
+        replace: true,
+      });
+    }
+  }, [
+    checked,
+    isCheckingAuth,
+    isAuthenticated,
+    location.pathname,
+    location.search,
+    navigate,
+  ]);
+
+  return {
+    isReady: checked && !isCheckingAuth && isAuthenticated,
+
+    isLoading: isCheckingAuth || !checked,
+  };
 }

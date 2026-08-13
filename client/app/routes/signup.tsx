@@ -5,11 +5,15 @@ import { useAuthStore } from "~/lib/authStore";
 
 export const meta = () => [
   { title: "HireLens | Sign Up" },
-  { name: "description", content: "Create your HireLens account" },
+  {
+    name: "description",
+    content: "Create your HireLens account",
+  },
 ];
 
 const Signup = () => {
-  const { isLoading, isAuthenticated, error, signup, clearError } = useAuthStore();
+  const { isAuthenticated, error, signup, clearError } = useAuthStore();
+
   const navigate = useNavigate();
 
   const [name, setName] = useState("");
@@ -18,34 +22,49 @@ const Signup = () => {
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    if (isAuthenticated) navigate("/");
+    if (isAuthenticated) {
+      navigate("/");
+    }
   }, [isAuthenticated, navigate]);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (submitting) return;
+
     clearError();
     setSubmitting(true);
+
     try {
       await signup(name, email, password);
     } catch {
-      // error is surfaced from the store below
+      // Error is already stored in authStore.
     } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <main id="main-content" className="min-h-screen flex items-center justify-center">
+    <main
+      id="main-content"
+      className="min-h-screen flex items-center justify-center"
+    >
       <div className="gradient-border shadow-[0_20px_60px_rgba(0,0,0,0.6)]">
         <section className="flex flex-col gap-8 bg-ink-soft/80 backdrop-blur-xl border border-white/10 rounded-2xl p-10">
           <div className="flex flex-col items-center gap-2 text-center">
             <h1>Create your account</h1>
+
             <h2>Start tracking applications with AI-powered feedback</h2>
           </div>
 
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-full" aria-describedby={error ? "signup-error" : undefined}>
+          <form
+            onSubmit={handleSubmit}
+            className="flex flex-col gap-4 w-full"
+            aria-describedby={error ? "signup-error" : undefined}
+          >
             <div className="form-div">
               <label htmlFor="name">Full name</label>
+
               <input
                 id="name"
                 type="text"
@@ -55,10 +74,13 @@ const Signup = () => {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 aria-invalid={!!error}
+                disabled={submitting}
               />
             </div>
+
             <div className="form-div">
               <label htmlFor="email">Email</label>
+
               <input
                 id="email"
                 type="email"
@@ -67,10 +89,13 @@ const Signup = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 aria-invalid={!!error}
+                disabled={submitting}
               />
             </div>
+
             <div className="form-div">
               <label htmlFor="password">Password</label>
+
               <input
                 id="password"
                 type="password"
@@ -81,20 +106,26 @@ const Signup = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 aria-invalid={!!error}
                 aria-describedby="password-hint"
+                disabled={submitting}
               />
+
               <p id="password-hint" className="text-xs text-white/30">
                 At least 8 characters.
               </p>
             </div>
 
             {error && (
-              <p id="signup-error" role="alert" className="text-red-400 text-sm">
+              <p
+                id="signup-error"
+                role="alert"
+                className="text-red-400 text-sm"
+              >
                 {error}
               </p>
             )}
 
-            <button className="auth-button" type="submit" disabled={submitting || isLoading}>
-              <p>{submitting || isLoading ? "Creating account..." : "Sign Up"}</p>
+            <button className="auth-button" type="submit" disabled={submitting}>
+              <p>{submitting ? "Creating account..." : "Sign Up"}</p>
             </button>
           </form>
 

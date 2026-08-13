@@ -5,22 +5,25 @@ import { useAuthStore } from "~/lib/authStore";
 
 export const meta = () => [
   { title: "HireLens | Log In" },
-  { name: "description", content: "Log into your account" },
+  {
+    name: "description",
+    content: "Log into your account",
+  },
 ];
 
-// Reads ?next=/some/path from the query string, defaulting to home if
-// absent or malformed - fixes the original bug where navigate(undefined)
-// could be called when there was no `next` param.
 function getNextPath(search: string): string {
   const params = new URLSearchParams(search);
   const next = params.get("next");
+
   return next && next.startsWith("/") ? next : "/";
 }
 
 const Auth = () => {
-  const { isLoading, isAuthenticated, error, login, clearError } = useAuthStore();
+  const { isAuthenticated, error, login, clearError } = useAuthStore();
+
   const location = useLocation();
   const navigate = useNavigate();
+
   const next = getNextPath(location.search);
 
   const [email, setEmail] = useState("");
@@ -28,24 +31,33 @@ const Auth = () => {
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    if (isAuthenticated) navigate(next);
+    if (isAuthenticated) {
+      navigate(next);
+    }
   }, [isAuthenticated, next, navigate]);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (submitting) return;
+
     clearError();
     setSubmitting(true);
+
     try {
       await login(email, password);
     } catch {
-      // error state is already set in the store; nothing else to do here
+      // Error is already stored in authStore.
     } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <main id="main-content" className="min-h-screen flex items-center justify-center">
+    <main
+      id="main-content"
+      className="min-h-screen flex items-center justify-center"
+    >
       <div className="gradient-border shadow-[0_20px_60px_rgba(0,0,0,0.6)]">
         <section className="flex flex-col gap-8 bg-ink-soft/80 backdrop-blur-xl border border-white/10 rounded-2xl p-10">
           <div className="flex flex-col items-center gap-2 text-center">
@@ -53,9 +65,14 @@ const Auth = () => {
             <h2>Log in to continue your job journey</h2>
           </div>
 
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-full" aria-describedby={error ? "auth-error" : undefined}>
+          <form
+            onSubmit={handleSubmit}
+            className="flex flex-col gap-4 w-full"
+            aria-describedby={error ? "auth-error" : undefined}
+          >
             <div className="form-div">
               <label htmlFor="email">Email</label>
+
               <input
                 id="email"
                 type="email"
@@ -64,10 +81,13 @@ const Auth = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 aria-invalid={!!error}
+                disabled={submitting}
               />
             </div>
+
             <div className="form-div">
               <label htmlFor="password">Password</label>
+
               <input
                 id="password"
                 type="password"
@@ -76,6 +96,7 @@ const Auth = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 aria-invalid={!!error}
+                disabled={submitting}
               />
             </div>
 
@@ -85,8 +106,8 @@ const Auth = () => {
               </p>
             )}
 
-            <button className="auth-button" type="submit" disabled={submitting || isLoading}>
-              <p>{submitting || isLoading ? "Logging in..." : "Log In"}</p>
+            <button className="auth-button" type="submit" disabled={submitting}>
+              <p>{submitting ? "Logging in..." : "Log In"}</p>
             </button>
           </form>
 
