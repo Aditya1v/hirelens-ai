@@ -35,14 +35,14 @@ function buildFeedbackPrompt({ resumeText, jobTitle, jobDescription }) {
 }
 
 Guidance:
-- ATS.tips: 3-5 tips about parseability/format/keyword alignment (ATS.tips do NOT need "explanation", just "type" and "tip").
-- toneAndStyle.tips, content.tips, structure.tips, skills.tips: 3-5 tips each, mix of "good" (things done well) and "improve" (specific, actionable), each with a short "explanation" grounded in the actual resume text.
+- ATS.tips: 2-3 tips about parseability/format/keyword alignment (ATS.tips do NOT need "explanation", just "type" and "tip").
+- toneAndStyle.tips, content.tips, structure.tips, skills.tips: 2-3 tips each, mix of "good" (things done well) and "improve" (specific, actionable), each with a short "explanation" grounded in the actual resume text.
 - Scores should meaningfully differ based on resume quality - do not default everything to the same number.
 - overallScore should be a reasonable weighted impression of the five category scores, not just their average.
 ${jdBlock}
 RESUME TEXT:
 """
-${resumeText.slice(0, 12000)}
+${resumeText.slice(0, 6000)}
 """`;
 }
 
@@ -56,7 +56,7 @@ export async function generateFeedback({ resumeText, jobTitle, jobDescription })
   const raw = await callJSON({
     system: FEEDBACK_SYSTEM_PROMPT,
     user: buildFeedbackPrompt({ resumeText, jobTitle, jobDescription }),
-    maxTokens: 3000,
+    maxTokens: 1800,
   });
 
   return sanitizeFeedback(raw);

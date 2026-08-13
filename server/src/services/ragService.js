@@ -14,43 +14,64 @@
 import { readFile } from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
-import { embedText, cosineSimilarity } from "./embeddingService.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
 const KB_PATH = path.join(__dirname, "..", "knowledge", "kb.json");
 
 let indexPromise = null;
 
-async function buildIndex() {
-  const raw = await readFile(KB_PATH, "utf-8");
-  const docs = JSON.parse(raw);
-  const withEmbeddings = await Promise.all(
-    docs.map(async (doc) => ({ ...doc, embedding: await embedText(`${doc.topic}: ${doc.text}`) }))
-  );
-  return withEmbeddings;
-}
+async function getIndex() {
+  if (!indexPromise) {
+    indexPromise = readFile(KB_PATH, "utf-8").then(JSON.parse);
+  }
 
-function getIndex() {
-  if (!indexPromise) indexPromise = buildIndex();
   return indexPromise;
 }
 
 /**
- * retrieveContext(query, topK = 4)
- * Returns the topK knowledge-base chunks most semantically similar to the
- * query, each annotated with its similarity score for transparency/logging.
+ * Fast lexical retrieval.
+ *
+ * The KB is intentionally small, so a lightweight
+ * token-overlap scorer is faster and more predictable
+ * than running the transformer model over every document.
  */
 export async function retrieveContext(query, topK = 4) {
-  const index = await getIndex();
-  const queryVec = await embedText(query);
+  const docs = await getIndex();
 
-  const scored = index.map((doc) => ({
-    id: doc.id,
-    topic: doc.topic,
-    text: doc.text,
-    similarity: cosineSimilarity(queryVec, doc.embedding),
-  }));
+  const queryTokens = tokenize(query);
 
-  scored.sort((a, b) => b.similarity - a.similarity);
-  return scored.slice(0, topK);
+  const scored = docs.map((doc) => {
+    const text = `${doc.topic} ${doc.text}`;
+    const tokens = tokenize(text);
+
+    const uniqueTokens = new Set(tokens);
+
+    let score = 0;
+
+    for (const token of queryTokens) {
+      if (uniqueTokens.has(token)) {
+        score += 1;
+      }
+    }
+
+    return {
+      id: doc.id,
+      topic: doc.topic,
+      text: doc.text,
+      similarity: queryTokens.length > 0 ? score / queryTokens.length : 0,
+    };
+  });
+
+  return scored.sort((a, b) => b.similarity - a.similarity).slice(0, topK);
+}
+
+function tokenize(text) {
+  return [
+    ...new Set(
+      String(text || "")
+        .toLowerCase()
+        .match(/[a-z0-9+#.-]{3,}/g) || [],
+    ),
+  ];
 }

@@ -50,7 +50,7 @@ ${kbBlock || "(none retrieved)"}
 
 RESUME TEXT:
 """
-${resumeText.slice(0, 10000)}
+${resumeText.slice(0, 4000)}
 """
 
 JOB DESCRIPTION:
@@ -94,7 +94,7 @@ export async function generateRecommendations({
     const raw = await callJSON({
       system: RECOMMENDATION_SYSTEM_PROMPT,
       user: buildPrompt({ resumeText, jobTitle, jobDescription, missingSkills, kbContext }),
-      maxTokens: 1800,
+      maxTokens: 1200,
     });
 
     const list = Array.isArray(raw) ? raw : Array.isArray(raw?.recommendations) ? raw.recommendations : [];
