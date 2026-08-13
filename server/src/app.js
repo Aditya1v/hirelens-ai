@@ -19,31 +19,59 @@ const globalLimiter = rateLimit({
   legacyHeaders: false,
 });
 
+function getAllowedOrigins() {
+  const origins = process.env.CLIENT_ORIGIN || "http://localhost:5173";
+
+  return origins
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+}
+
 export function createApp() {
   const app = express();
 
-  // Security headers (CSP, X-Frame-Options, etc). API-only responses, so a
-  // restrictive default policy is safe with no risk of breaking inline
-  // client assets (the client is a separate app).
+  const allowedOrigins = getAllowedOrigins();
+
   app.use(helmet());
   app.use(compression());
 
   app.use(
     cors({
-      origin: process.env.CLIENT_ORIGIN || "http://localhost:5173",
+      origin: (origin, callback) => {
+        // Allow requests with no Origin header
+        // (health checks, server-to-server requests, etc.)
+        if (!origin) {
+          return callback(null, true);
+        }
+
+        if (allowedOrigins.includes(origin)) {
+          return callback(null, true);
+        }
+
+        return callback(
+          new Error(`CORS blocked origin: ${origin}`)
+        );
+      },
       credentials: true,
     })
   );
+
   app.use(express.json({ limit: "1mb" }));
   app.use(cookieParser());
-  // Strips any request key starting with "$" or containing "." from
-  // req.body/query/params - defense-in-depth against NoSQL operator
-  // injection, on top of zod validation and Mongoose's own type coercion.
+
   app.use(mongoSanitize());
+
   app.use("/api", globalLimiter);
 
   app.get("/api/health", (req, res) => {
-    res.json({ success: true, data: { status: "ok", time: new Date().toISOString() } });
+    res.json({
+      success: true,
+      data: {
+        status: "ok",
+        time: new Date().toISOString(),
+      },
+    });
   });
 
   app.use("/api/auth", authRoutes);
