@@ -7,12 +7,17 @@ const cookieOptions = () => {
 
   return {
     httpOnly: true,
+
     secure: isProduction,
 
-    // Vercel frontend + Render backend are cross-site in production.
-    // SameSite=None is required for the auth cookie to be sent
-    // with cross-origin fetch requests.
-    sameSite: isProduction ? "none" : "lax",
+    /*
+     * Production traffic is routed through the Vercel
+     * reverse proxy, so the browser sees the API as
+     * same-origin.
+     *
+     * "lax" is preferable when possible.
+     */
+    sameSite: isProduction ? "lax" : "lax",
 
     maxAge: 7 * 24 * 60 * 60 * 1000,
 
@@ -31,7 +36,9 @@ function sendAuthResponse(res, statusCode, user) {
 
   res.status(statusCode).json({
     success: true,
-    data: { user },
+    data: {
+      user,
+    },
   });
 }
 
@@ -64,7 +71,9 @@ export const signup = asyncHandler(async (req, res) => {
 export const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
-  const user = await User.findOne({ email }).select("+passwordHash");
+  const user = await User.findOne({
+    email,
+  }).select("+passwordHash");
 
   if (!user) {
     throw new AppError("Invalid email or password.", 401);
