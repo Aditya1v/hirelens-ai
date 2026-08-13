@@ -41,17 +41,11 @@ export function createApp() {
       origin: (origin, callback) => {
         // Allow requests with no Origin header
         // (health checks, server-to-server requests, etc.)
-        if (!origin) {
+        if (!origin || allowedOrigins.includes(origin)) {
           return callback(null, true);
+        }else{
+          callback(new Error(`CORS blocked origin: ${origin}`));
         }
-
-        if (allowedOrigins.includes(origin)) {
-          return callback(null, true);
-        }
-
-        return callback(
-          new Error(`CORS blocked origin: ${origin}`)
-        );
       },
       credentials: true,
     })
