@@ -1,0 +1,82 @@
+[
+  {
+    "id": "ats-001",
+    "topic": "ATS parsing",
+    "text": "Applicant Tracking Systems parse resumes as plain text and often fail on multi-column layouts, text inside tables, or text embedded in images. Single-column layouts with standard section headings (Experience, Education, Skills) parse most reliably."
+  },
+  {
+    "id": "ats-002",
+    "topic": "ATS parsing",
+    "text": "Contact information, dates, and job titles should be in plain text, not inside headers, footers, or text boxes, since many ATS parsers skip those regions entirely."
+  },
+  {
+    "id": "ats-003",
+    "topic": "File format",
+    "text": "A text-based PDF (exported from Word, Google Docs, or LaTeX) is the safest format for ATS compatibility. Scanned image PDFs cannot be parsed without OCR and should be avoided."
+  },
+  {
+    "id": "content-001",
+    "topic": "Bullet points",
+    "text": "Strong resume bullet points follow an action-verb + task + quantified result structure, for example 'Reduced API response time by 40% by introducing Redis caching' rather than 'Responsible for improving performance'."
+  },
+  {
+    "id": "content-002",
+    "topic": "Quantification",
+    "text": "Recruiters and ATS keyword scoring both respond better to measurable outcomes: percentages, time saved, revenue, user counts, or scale (e.g. requests/sec, team size) make impact concrete instead of vague."
+  },
+  {
+    "id": "content-003",
+    "topic": "Keyword alignment",
+    "text": "Resumes that mirror the exact terminology used in the job description (e.g. 'React.js' vs 'ReactJS', 'CI/CD' vs 'continuous integration') score higher on keyword-matching ATS systems, since these systems often do literal string matching."
+  },
+  {
+    "id": "style-001",
+    "topic": "Tone and style",
+    "text": "Resume bullets should be written in the past tense for previous roles and present tense only for current responsibilities, with consistent verb tense throughout each section."
+  },
+  {
+    "id": "style-002",
+    "topic": "Tone and style",
+    "text": "Avoid first-person pronouns (I, my) on a resume; bullets should start directly with an action verb ('Built', 'Led', 'Designed') for a concise, professional tone."
+  },
+  {
+    "id": "structure-001",
+    "topic": "Structure",
+    "text": "A scannable resume uses consistent formatting: the same date format throughout, consistent heading styles, and reverse-chronological ordering within each section so the most recent and relevant experience appears first."
+  },
+  {
+    "id": "structure-002",
+    "topic": "Structure",
+    "text": "For early-career or student resumes, a Projects section placed near the top (before or alongside Experience) is effective when formal work experience is limited, since it demonstrates applied skills directly."
+  },
+  {
+    "id": "skills-001",
+    "topic": "Skills section",
+    "text": "A skills section should separate categories (e.g. Languages, Frameworks, Tools, Cloud) rather than listing everything in one unsorted line, which both improves scannability and keyword matching."
+  },
+  {
+    "id": "skills-002",
+    "topic": "Skills section",
+    "text": "Listing a skill only in the Skills section without any supporting evidence in Experience or Projects is a common weakness; skills claimed should be demonstrated at least once in a bullet point."
+  },
+  {
+    "id": "role-swe-001",
+    "topic": "Software Engineer role",
+    "text": "For software engineering roles, job descriptions commonly weight core skills higher when they appear in the first few required-qualifications bullets, and 'nice to have' sections indicate lower-priority skills."
+  },
+  {
+    "id": "role-swe-002",
+    "topic": "Software Engineer role",
+    "text": "For full-stack or backend roles, evidence of system design thinking (scalability, data modeling, API design) in project or experience bullets is typically more valued than simply listing a long tool list."
+  },
+  {
+    "id": "role-data-001",
+    "topic": "Data role",
+    "text": "For data analyst or data scientist roles, ATS and recruiters look for specific tooling (SQL, Python, pandas, visualization tools) paired with a described business outcome, not just tool names in isolation."
+  },
+  {
+    "id": "gap-001",
+    "topic": "Skill gap framing",
+    "text": "When a required skill from a job description is missing from a resume, the most effective mitigation (if true) is to relate it to an adjacent skill already present, rather than fabricating direct experience with it."
+  }
+]

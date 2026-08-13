@@ -1,0 +1,363 @@
+@import url("https://fonts.googleapis.com/css2?family=Mona+Sans:ital,wght@0,200..900;1,200..900&display=swap");
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/* ---------------------------------------------------------------------
+   HireLens design tokens - black + green glassmorphism identity.
+   Class names are unchanged from the original theme so no component
+   JSX needed to change for this redesign; only the values here did.
+--------------------------------------------------------------------- */
+@theme {
+  --font-sans: "Mona Sans", ui-sans-serif, system-ui, sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
+  --color-dark-200: #a9b4ad;
+
+  /* glass surface tones */
+  --color-light-blue-100: #10b98114;
+  --color-light-blue-200: #10b9814d;
+
+  /* core palette */
+  --color-ink: #05070a;
+  --color-ink-soft: #0b0f0d;
+  --color-panel: #0e1512;
+  --color-emerald: #22e5a0;
+  --color-emerald-soft: #17b884;
+  --color-emerald-dim: #0f3d2c;
+
+  --color-badge-green: #0f3d2c;
+  --color-badge-red: #3d1414;
+  --color-badge-yellow: #3d3312;
+
+  --color-badge-green-text: #6bf5b8;
+  --color-badge-red-text: #ff9d94;
+  --color-badge-yellow-text: #ffd98c;
+}
+
+html,
+body {
+  @apply bg-ink text-white;
+  background-color: var(--color-ink);
+}
+
+/* Skip link - visible on keyboard focus only, standard a11y pattern */
+.skip-link {
+  @apply sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[999]
+    focus:bg-emerald focus:text-ink focus:px-4 focus:py-2 focus:rounded-xl focus:font-semibold;
+}
+
+main {
+  @apply min-h-screen pt-10 relative isolate;
+  background:
+    radial-gradient(60% 45% at 12% 8%, #16f7a355 0%, transparent 70%),
+    radial-gradient(50% 40% at 90% 15%, #0ea97a3d 0%, transparent 70%),
+    radial-gradient(55% 45% at 50% 100%, #0a5c3f33 0%, transparent 75%),
+    var(--color-ink);
+}
+
+h1 {
+  @apply max-sm:text-[2.5rem] text-6xl text-gradient leading-tight xl:tracking-[-2px] font-semibold;
+}
+
+h2 {
+  @apply max-sm:text-lg text-3xl text-dark-200;
+}
+
+label {
+  @apply text-dark-200 text-sm font-medium;
+}
+
+input,
+textarea {
+  @apply w-full p-4 inset-shadow rounded-2xl focus:outline-none bg-white/5 text-white
+    placeholder:text-white/30 border border-white/10
+    focus-visible:ring-2 focus-visible:ring-emerald focus-visible:border-emerald/60
+    transition-colors duration-200;
+}
+
+form {
+  @apply flex flex-col items-start gap-6 w-full;
+}
+
+/* Consistent visible focus ring for keyboard nav across all interactive elements */
+a:focus-visible,
+button:focus-visible,
+[tabindex]:focus-visible {
+  @apply outline-none ring-2 ring-emerald ring-offset-2 ring-offset-ink rounded-lg;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@layer components {
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-emerald via-[#8CFFD8] to-[#0ea97a];
+  }
+
+  .gradient-border {
+    @apply bg-gradient-to-b from-light-blue-100 to-light-blue-200 p-4 rounded-2xl
+      backdrop-blur-xl border border-emerald/20;
+  }
+
+  .primary-button {
+    @apply primary-gradient text-ink font-semibold rounded-full px-4 py-2 cursor-pointer w-full
+      transition-transform duration-200 hover:scale-[1.02] active:scale-[0.98]
+      disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100;
+  }
+
+  .resume-nav {
+    @apply flex flex-row justify-between items-center p-4 border-b border-white/10
+      bg-white/[0.03] backdrop-blur-xl;
+  }
+
+  .resume-summary {
+    @apply flex flex-row items-center justify-center p-4 gap-4;
+    .category {
+      @apply flex flex-row gap-2 items-center bg-white/[0.03] border border-white/10
+        rounded-2xl p-4 w-full justify-between backdrop-blur-md;
+    }
+  }
+
+  .back-button {
+    @apply flex flex-row items-center gap-2 border border-white/10 rounded-lg p-2
+      bg-white/[0.03] hover:bg-white/[0.07] transition-colors backdrop-blur-md;
+  }
+
+  .auth-button {
+    @apply primary-gradient text-ink rounded-full py-4 px-8 cursor-pointer w-full max-w-[600px]
+      text-2xl font-semibold transition-transform duration-200 hover:scale-[1.01] active:scale-[0.99]
+      disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100;
+  }
+
+  .main-section {
+    @apply flex flex-col items-center gap-8 pt-12 max-sm:mx-3 mx-4 sm:mx-8 lg:mx-15 pb-10;
+  }
+
+  .page-heading {
+    @apply flex flex-col items-center gap-6 max-w-4xl text-center max-sm:gap-4 mx-auto;
+  }
+
+  .resumes-section {
+    @apply flex flex-wrap max-md:flex-col max-md:gap-4 gap-6 items-stretch max-md:items-center
+      w-full max-w-[1850px] justify-center mx-auto;
+  }
+
+  .resume-card {
+    @apply flex flex-col gap-6 h-auto min-h-[420px] sm:min-h-[480px] w-full max-w-[350px] lg:max-w-[420px]
+      glass-panel p-5 transition-all duration-300 hover:border-emerald/40
+      hover:shadow-[0_8px_40px_rgba(34,229,160,0.15)];
+  }
+
+  .resume-card-header {
+    @apply flex flex-row gap-2 justify-between min-h-[90px] max-sm:flex-col items-center
+      max-md:justify-center max-md:items-center;
+  }
+
+  .feedback-section {
+    @apply flex flex-col gap-8 w-full lg:w-1/2 px-4 sm:px-8 max-lg:w-full py-6;
+  }
+
+  .navbar {
+    @apply sticky top-3 sm:top-4 z-50 flex flex-col gap-2 w-[calc(100%-1rem)] sm:w-[calc(100%-2rem)]
+      max-w-[1180px] mx-auto mt-3 sm:mt-4 px-3 sm:px-4 py-3 rounded-2xl border border-white/10
+      bg-ink-soft/75 backdrop-blur-2xl shadow-[0_18px_50px_rgba(0,0,0,0.35)];
+  }
+
+  .navbar-inner {
+    @apply flex min-h-11 w-full items-center justify-between gap-3;
+  }
+
+  .navbar-brand {
+    @apply flex min-w-0 shrink-0 items-center gap-2 rounded-xl px-1.5 py-1 transition-colors
+      hover:bg-white/[0.04];
+  }
+
+  .navbar-brand-mark {
+    @apply grid size-9 shrink-0 place-items-center rounded-xl border border-emerald/30
+      bg-emerald/15 text-sm font-black text-emerald shadow-[0_0_22px_rgba(34,229,160,0.18)];
+  }
+
+  .navbar-brand-text {
+    @apply truncate text-xl sm:text-2xl font-black;
+  }
+
+  .navbar-links {
+    @apply hidden md:flex items-center gap-1 rounded-full border border-white/10 bg-black/20 p-1;
+  }
+
+  .navbar-link {
+    @apply inline-flex h-9 items-center justify-center whitespace-nowrap rounded-full px-3
+      text-sm font-semibold text-white/60 transition-colors hover:bg-white/[0.07] hover:text-white;
+  }
+
+  .navbar-link-active {
+    @apply bg-white/[0.10] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08)];
+  }
+
+  .navbar-actions {
+    @apply hidden md:flex items-center justify-end gap-2;
+  }
+
+  .navbar-status {
+    @apply h-9 w-32 animate-pulse rounded-full bg-white/10;
+  }
+
+  .navbar-user {
+    @apply flex max-w-[190px] items-center gap-2 rounded-full border border-white/10
+      bg-white/[0.04] py-1 pl-1 pr-3;
+  }
+
+  .navbar-user-avatar {
+    @apply grid size-7 shrink-0 place-items-center rounded-full bg-emerald/15 text-xs font-black text-emerald;
+  }
+
+  .navbar-user-name {
+    @apply min-w-0 truncate text-sm font-semibold text-white/80;
+  }
+
+  .navbar-button {
+    @apply inline-flex h-9 items-center justify-center whitespace-nowrap rounded-full border border-white/10
+      bg-white/[0.04] px-3 text-sm font-semibold text-white/65 transition-colors hover:bg-white/[0.08]
+      hover:text-white disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .navbar-menu-button {
+    @apply inline-flex size-10 shrink-0 items-center justify-center rounded-xl border border-white/10
+      bg-white/[0.05] text-white/80 transition-colors hover:bg-white/[0.09] hover:text-white;
+  }
+
+  .navbar-menu-button svg {
+    @apply fill-none stroke-current stroke-2 [stroke-linecap:round] [stroke-linejoin:round];
+  }
+
+  .navbar-mobile-menu {
+    @apply flex flex-col gap-3 rounded-xl border border-white/10 bg-black/25 p-2
+      shadow-[inset_0_1px_0_rgba(255,255,255,0.05)];
+  }
+
+  .navbar-mobile-link {
+    @apply flex min-h-11 items-center rounded-lg px-3 text-sm font-semibold text-white/70
+      transition-colors hover:bg-white/[0.08] hover:text-white;
+  }
+
+  .navbar-mobile-link-active {
+    @apply bg-white/[0.10] text-white;
+  }
+
+  .navbar-mobile-user {
+    @apply flex min-w-0 items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] p-2;
+  }
+
+  .navbar-mobile-button {
+    @apply flex min-h-11 w-full items-center justify-center rounded-lg border border-white/10
+      bg-white/[0.05] px-3 text-sm font-semibold text-white/75 transition-colors hover:bg-white/[0.09]
+      hover:text-white disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .navbar-button-primary {
+    @apply border-emerald/30 bg-emerald text-ink shadow-[0_4px_24px_rgba(34,229,160,0.25)]
+      hover:bg-[#3dffb8] hover:text-ink;
+  }
+
+  @media (min-width: 48rem) {
+    .navbar-menu-button,
+    .navbar-mobile-menu {
+      display: none;
+    }
+  }
+
+  .score-badge {
+    @apply flex flex-row items-center justify-center py-1 px-3 gap-2 rounded-full border border-white/10;
+  }
+
+  .form-div {
+    @apply flex flex-col gap-2 w-full items-start;
+  }
+
+  .uplader-drag-area {
+    @apply relative p-8 text-center transition-all duration-300 cursor-pointer
+      bg-white/[0.03] hover:bg-white/[0.06] rounded-2xl min-h-[208px] border border-dashed border-white/15
+      hover:border-emerald/40;
+  }
+  .uploader-selected-file {
+    @apply flex items-center justify-between p-3 bg-white/[0.05] rounded-2xl border border-white/10;
+  }
+}
+
+@utility glass-panel {
+  @apply bg-white/[0.04] backdrop-blur-xl border border-white/10 rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.5)];
+}
+
+@utility bg-gradient {
+  background:
+    radial-gradient(50% 40% at 20% 10%, #16f7a340 0%, transparent 70%),
+    radial-gradient(40% 35% at 85% 20%, #0ea97a30 0%, transparent 70%),
+    var(--color-ink);
+}
+
+@utility text-gradient {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-emerald via-[#8CFFD8] to-[#0ea97a];
+}
+
+@utility gradient-hover {
+  @apply bg-gradient-to-b from-light-blue-100 to-light-blue-200;
+}
+
+@utility primary-gradient {
+  background: linear-gradient(135deg, #22e5a0, #0ea97a);
+  box-shadow: 0 4px 24px rgba(34, 229, 160, 0.25);
+}
+
+@utility primary-gradient-hover {
+  background: linear-gradient(135deg, #3dffb8, #14c98c);
+}
+
+@utility inset-shadow {
+  box-shadow: inset 0 0 16px 0 rgba(34, 229, 160, 0.08);
+  backdrop-filter: blur(10px);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Ambient blurred green smudges used behind auth/hero screens - a single
+   reusable utility instead of per-page background images. */
+.ambient-glow {
+  @apply pointer-events-none fixed inset-0 -z-10 overflow-hidden;
+}
+.ambient-glow::before,
+.ambient-glow::after {
+  content: "";
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(120px);
+  opacity: 0.35;
+}
+.ambient-glow::before {
+  width: 520px;
+  height: 520px;
+  top: -120px;
+  left: -100px;
+  background: #22e5a0;
+}
+.ambient-glow::after {
+  width: 480px;
+  height: 480px;
+  bottom: -140px;
+  right: -100px;
+  background: #0ea97a;
+}
