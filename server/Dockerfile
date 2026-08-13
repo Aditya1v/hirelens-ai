@@ -1,13 +1,19 @@
-FROM node:20-alpine AS deps
-WORKDIR /app
-COPY package.json package-lock.json ./
-RUN npm ci --omit=dev
-
 FROM node:20-alpine
+
 WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
+
+# Enable pnpm through Corepack
+RUN corepack enable
+
+# Copy dependency files
+COPY package.json pnpm-lock.yaml ./
+
+# Install production dependencies
+RUN pnpm install --frozen-lockfile --prod
+
+# Copy application source
 COPY . .
-RUN mkdir -p uploads
-ENV NODE_ENV=production
+
 EXPOSE 5000
-CMD ["node", "src/server.js"]
+
+CMD ["pnpm", "start"]
